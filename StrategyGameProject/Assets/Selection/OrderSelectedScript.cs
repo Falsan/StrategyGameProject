@@ -23,9 +23,27 @@ public class OrderSelectedScript : MonoBehaviour {
     void GiveOrder()
     {
         Vector3 moveTo = Input.mousePosition;
-        for (int iter = 0; iter < SelectableManager.instance.currentSelected.Count; iter++)
+
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(moveTo);
+        Physics.Raycast(ray, out hit);
+        if (hit.collider.gameObject.GetComponent<BaseUnitScript>())
         {
-            SelectableManager.instance.currentSelected[iter].GetComponent<BaseUnitScript>().Move(moveTo);
+            if (hit.collider.gameObject.GetComponent<BaseUnitScript>().team
+                != SelectableManager.instance.currentSelected[0].GetComponent<BaseUnitScript>().team)
+            {
+                for (int iter = 0; iter < SelectableManager.instance.currentSelected.Count; iter++)
+                {
+                    SelectableManager.instance.currentSelected[iter].GetComponent<BaseUnitScript>().Attack(hit.collider.gameObject);
+                }
+            }
+        }
+        else
+        {
+            for (int iter = 0; iter < SelectableManager.instance.currentSelected.Count; iter++)
+            {
+                SelectableManager.instance.currentSelected[iter].GetComponent<BaseUnitScript>().Move(moveTo);
+            }
         }
     }
 }
